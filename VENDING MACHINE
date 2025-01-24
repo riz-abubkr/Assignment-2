@@ -1,0 +1,161 @@
+# List of products and their prices in Dhs
+products = {
+    'P0001': {'name': 'Coffee', 'price': 3.00},
+    'P002': {'name': 'Tea', 'price': 2.00},
+    'P003': {'name': 'Chips', 'price': 2.50},
+    'P004': {'name': 'Ice cream', 'price': 2.50},
+    'P005': {'name': 'Biscuits', 'price': 2.00}
+}
+
+# Displaying products and their code
+def display_products():
+    print("Available Products:")
+    for code, product in products.items():
+        print(f"Code: {code} | Product: {product['name']} | Price: د.إ {product['price']:.2f}")
+
+# Suggesting other products
+def suggest_other_products(amount):
+    print("\nYou have enough money for these products:")
+    for code, product in products.items():
+        if product['price'] <= amount:
+            print(f"Code: {code} | Product: {product['name']} | Price: د.إ {product['price']:.2f}")
+
+# Checking offers
+def apply_offers(selected_products):
+    # Coffee + Biscuits offer
+    if 'Coffee' in selected_products and 'Biscuits' in selected_products:
+        print("\nSpecial Offer: Buy 1 Coffee and 1 Biscuit, get 1 Biscuit FREE!")
+        selected_products.append('Biscuits')  # Free Biscuit
+
+    # Chips offer
+    if selected_products.count('Chips') >= 2:
+        print("\nSpecial Offer: Buy 2 Chips, get 1 Yellow Chips FREE!")
+        selected_products.append('Yellow Chips')  # Free chips
+
+# Processing the function
+def process_purchase(selected_products, inserted_money):
+    total_price = 0
+    for product in selected_products:
+        if product in products:
+            total_price += products[product]['price']
+
+    print(f"Total price: د.إ {total_price:.2f}")
+    print(f"Inserted money: د.إ {inserted_money:.2f}")
+
+    if inserted_money < total_price:
+        print("\nNot enough money. Please insert more.")
+        return False
+    elif inserted_money > total_price:
+        print(f"\nYou have inserted د.إ {inserted_money:.2f}, which is more than the required amount.")
+        suggest_other_products(inserted_money)  # Suggest products with the remaining balance
+        return True
+    else:
+        print(f"\nYou have inserted د.إ {inserted_money:.2f}, which is exactly the required amount.")
+        suggest_other_products(inserted_money)  # Suggest products even with no balance left
+        return True
+
+# Adding Toppings
+def add_toppings():
+    toppings = ['Sprinkles', 'Chocolate Chips', 'Caramel Syrup', 'None']
+    print("\nChoose a topping for your product (Enter the number):")
+    for i, topping in enumerate(toppings, start=1):
+        print(f"{i}. {topping}")
+    topping_choice = int(input("\nEnter your choice (1-4): "))
+    
+    if topping_choice == 1:
+        return 'Sprinkles'
+    elif topping_choice == 2:
+        return 'Chocolate Chips'
+    elif topping_choice == 3:
+        return 'Caramel Syrup'
+    else:
+        return 'No Topping'
+
+# Choosing chips color
+def choose_Chips_color():
+    Chips_colors = ['Red', 'Blue', 'Green', 'Yellow']
+    print("\nChoose the color of your Chips (Enter the number):")
+    for i, color in enumerate(Chips_colors, start=1):
+        print(f"{i}. {color}")
+    color_choice = int(input("\nEnter your choice (1-4): "))
+    
+    if 1 <= color_choice <= 4:
+        return Chips_colors[color_choice - 1]
+    else:
+        print("\nInvalid choice. Defaulting to 'Red'.")
+        return 'Red'
+
+# Functions of vending machine
+def vending_machine():
+    print("Welcome to the Vending Machine!")
+    
+    selected_products = []
+
+    while True:
+        display_products()
+    
+        # Getting code from customer
+        product_code = input("\nEnter the product code (or type 'exit' to quit): ").upper()
+        if product_code == 'EXIT':
+            print("Please Have your selected product and Thank you for using the vending machine.")
+            break
+        
+        if product_code not in products:
+            print("\nInvalid code. Please try again.")
+            continue
+        
+        # selected product and its price
+        selected_product = products[product_code]
+        print(f"\nYou have selected: {selected_product['name']} | Price: د.إ {selected_product['price']:.2f}")
+        selected_products.append(selected_product['name'])
+        
+        # Ask if the customer wants to add toppings (only for Ice Cream)
+        if selected_product['name'] == 'Ice cream':
+            topping = add_toppings()
+            print(f"Topping added: {topping}")
+        
+        # Ask for chips color if chips are selected
+        if selected_product['name'] == 'Chips':
+            chips_color = choose_Chips_color()
+            print(f"Chips color selected: {chips_color}")
+        
+        # Apply special offers
+        apply_offers(selected_products)
+
+        # Get money inserted by the customer
+        money_inserted = float(input("\nInsert money: د.إ "))
+        
+        # Process the purchase and dispense product
+        if process_purchase(selected_products, money_inserted):
+            # Dispense the product and print a receipt
+            print("\nReceipt:")
+            total_price = 0
+            for product in selected_products:
+                if product in products:
+                    print(f"Product: {product} | Price: د.إ {products[product]['price']:.2f}")
+                    total_price += products[product]['price']
+            change = money_inserted - total_price
+            if change > 0:
+                print(f"Change returned: د.إ {change:.2f}")
+            print("Enjoy your product!\n")
+            break
+        else:
+            # If not enough money, ask for more
+            additional_money = float(input("\nPlease insert more money: د.إ "))
+            money_inserted += additional_money
+            if process_purchase(selected_products, money_inserted):
+                # Dispense the product and print a receipt
+                print("\nReceipt:")
+                total_price = 0
+                for product in selected_products:
+                    if product in products:
+                        print(f"Product: {product} | Price: د.إ {products[product]['price']:.2f}")
+                        total_price += products[product]['price']
+                change = money_inserted - total_price
+                if change > 0:
+                    print(f"Change returned: د.إ {change:.2f}")
+                print("Thank you!\n")
+                break
+
+# Start the vending machine program
+vending_machine()
